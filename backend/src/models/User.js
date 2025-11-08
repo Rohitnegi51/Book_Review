@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     createdAt:{
         type:Date,
     }
-});
+},{timestamps:true });
 
 //password hashing
 
@@ -34,7 +34,14 @@ userSchema.pre("save",async function(next){
     this.password = await bcrypt.hash(this.password,salt);
 
     next();
-})
+});
+
+//compare password
+userSchema.methods.comparePass = async function (userPassword){
+    return await bcrypt.compare(userPassword, this.password)
+}
+//why not use arrow function here ?
+//Arrow functions do not have their own this.Instead, they capture this from the surrounding lexical scope — in this case,
 
 const User = mongoose.model("User",userSchema);
 

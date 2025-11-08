@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 import "dotenv/config"
 const router = express.Router();
 
-const genrateToken = (userId)=>{
+const generateToken = (userId)=>{
     return jwt.sign({userId},process.env.JWT_SECRET ,{expiresIn:"15d"})
 }
 
@@ -37,7 +37,7 @@ router.post("/register",async(req,res)=>{
 
         await user.save();
 
-        const token = genrateToken(user._id);
+        const token = generateToken(user._id);
         res.status(201).json({
             token,
             user:{
@@ -49,12 +49,45 @@ router.post("/register",async(req,res)=>{
         })
 
     }catch(error){
-
+        console.log("Error in register route",error);
+        res.status(500).json({message:"Internal server error"});
     }
 })
 
-router.post("/login",(req,res)=>{
-    res.send("Login");
+router.post("/login", async(req,res)=>{
+    try{
+        const{email,password} = req.body ;
+
+        if(!email || !password){
+            return res.status(400).json({message:"All fields must be filled"});
+        }
+
+        const user = await User.findOne({email});
+
+        if(!user){
+            return res.status(400).json({message:"Invalid credentials"});
+        }
+
+        const isPasswordCorrect = await user.comparePass(password);
+        if(!isPasswordCorrect){
+            return res.status(400).json({message:"Invalid credentials"});
+        }
+
+        const token = generateToken(user._id);
+
+        res.status(200).json({
+            token,
+            user:{
+                id:user._id,
+                username:user.username,
+                email:user.email,
+                profileImage:user.profileImage,
+            }
+        });
+    }catch(error){
+        console.log("Error in Login route",error);
+        res.status(500).json({message:"Interval Server Error"});
+    }
 })
 
 export default router;
