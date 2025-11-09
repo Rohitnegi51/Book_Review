@@ -57,4 +57,40 @@ router.get("/",protectRoute,async(req,res)=>{
     }
 })
 
+router.delete("/:bookId",protectRoute , async(req,res)=>{
+    try {
+        const book = await Book.findById(req.params.bookId);
+        if(!book){
+            return res.status(404).json({message:"Book not found"});
+        }
+        if(book.user.toString() != req.user._id.toString()){
+            return res.status(401).json({message:"Unauthorized user"});
+        }
+        //delete image from cloudinary
+        if(book.image && book.image.includes("cloudinary")){
+            try{
+                const publicId = book.image.split("/").pop().split(".")[0];
+                await cloudinary.uploader.destroy(publicId);
+            }catch(imgerror){
+                console.log("Error in deleting img from cloudinary",imgerror)
+            }
+        }
+        await book.deleteOne();
+        res.json({message:"Book deleted successfully"})
+    } catch (error) {
+        console.log("User can't be deleted",error);
+        res.status(500).json({message:"Internal Server Error"});
+    }
+})
+
+router.get("/userReview", protectRoute,async(req,res)=>{
+    try{
+        const books = await Book.find({user:req.user._id}).sort({createdAt:-1});
+        res.json(books);
+    }catch(error){
+        console.log("Error in showing all books",error);
+        res.status(500).json({message:"Internal Server Error"});
+    }
+})
+
 export default router;
