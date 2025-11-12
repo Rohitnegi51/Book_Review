@@ -1,11 +1,22 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {Link} from "expo-router"
+import {useAuthStore} from "../store/authStore"
+import { useEffect } from "react";
 export default function Index() {
+  const {user,token ,checkAuth,logout} = useAuthStore();
+  console.log(`user:`,user ,` token:`,token)
+  useEffect(()=>{
+    checkAuth()
+  },[])
   return (
     <View
       style={styles.container}
     >
       <Text style={styles.title}>Hello</Text>
+      <Text>{token}</Text>
+      <TouchableOpacity onPress={logout}>
+        <Text>Logout</Text>
+      </TouchableOpacity>
       <Link href="/(auth)/signup">Signup</Link>
       <Link href="/(auth)">Login Page</Link>
     </View>
