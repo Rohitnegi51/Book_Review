@@ -12,7 +12,7 @@ router.post("/",protectRoute ,async(req,res)=>{
         }
 
         //upload image to cloudinary and save to db
-        const uploadImg = await cloudinary.uploader.upload(image);
+        const uploadImg = await cloudinary.uploader.upload(image,{resource_type:'image'});
         const imgUrl = uploadImg.secure_url;
         const newBook = new Book({
             title,
@@ -27,7 +27,7 @@ router.post("/",protectRoute ,async(req,res)=>{
 
     }catch(error){
         console.log("Error in creating book ",error);
-        res.status(500).json({message:"Internal Server Error"});
+        res.status(500).json({message:error.message});
     }
 });
 

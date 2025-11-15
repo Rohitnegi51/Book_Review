@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import COLORS from '../../constants/colors';
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system"
-import {useAuthStore} from "../../store/authStore"
+import { useAuthStore } from "../../store/authStore"
 import { API_KEY } from '../../constants/api';
 export default function Create() {
     const [title, setTitle] = useState("");
@@ -17,7 +17,7 @@ export default function Create() {
     const [loading , setLoading] = useState(false);
 
     const router = useRouter();
-    const {token} = useAuthStore();
+    const { token } = useAuthStore();
 
     const pickImage =async ()=>{
         try {
@@ -40,7 +40,7 @@ export default function Create() {
             })
 
             if(!result.canceled){
-                console.log("results:",result);
+                //console.log("results:",result);
                 setImage(result.assets[0].uri)
 
                 if(result.assets[0].base64){
@@ -55,7 +55,6 @@ export default function Create() {
         } catch (error) {
             console.log("Error picking Image",error);
             Alert.alert("Error","Problem in selecting your image");
-            
         }
     }
     const handleSubmit = async()=>{
@@ -63,6 +62,11 @@ export default function Create() {
             Alert.alert("Error","Please fill in all fields");
             return;
         }
+        if (!image || !imageBase64) {
+            Alert.alert("Error", "Image is missing");
+            return;
+          }
+          
         try {
             setLoading(true);
             //image uri looks like file://data//user/.../photo.png
@@ -71,7 +75,6 @@ export default function Create() {
             const imageType = fileType ? `image/${fileType.toLowerCase()}` : "image/jpeg" ;
 
             const imageDataUrl = `data:${imageType};base64,${imageBase64}` ;
-
             const response = await fetch(`${API_KEY}/books`,{
                 method:"POST",
                 headers:{
@@ -82,12 +85,12 @@ export default function Create() {
                     title,
                     caption,
                     rating:rating.toString(),
-                    image:imageDataUrl
+                    image:imageDataUrl,
                 })
             });
 
             const data = await response.json();
-
+            console.log({data});
             if(!response.ok) throw new Error(data.message || "Something went wrong");
 
             Alert.alert("Success","Your Book Review has been posted");
@@ -211,6 +214,7 @@ export default function Create() {
                 <TouchableOpacity
                     style={styles.button}
                     onPress={handleSubmit}
+                    disabled={loading}
                 >
                     {loading?(
                         <ActivityIndicator color={COLORS.white}/>
