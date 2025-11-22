@@ -6,6 +6,7 @@ export const useAuthStore = create((set) => ({
   token: null,
   isLoading: false,
   isCheckingAuth:true,
+  hydrated:false,
 
   register: async (username, email, password) => {
     set({ isLoading: true });
@@ -76,7 +77,7 @@ export const useAuthStore = create((set) => ({
       const userJson = await AsyncStorage.getItem("user");
       const user = userJson ? JSON.parse(userJson) :null;
 
-      set({token , user});
+      set({token , user ,hydrated:true});
     }catch(error){
       console.log("Auth Check failed",error)
     }finally{

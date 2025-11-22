@@ -12,7 +12,7 @@ export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
 
-  const {checkAuth ,user ,token} = useAuthStore();
+  const {checkAuth ,user ,token,hydrated} = useAuthStore();
 
   const [fontsLoaded] = useFonts({
     "JetbrainMono-Medium":require("../assets/fonts/JetBrainsMono-Medium.ttf")
@@ -38,7 +38,7 @@ export default function RootLayout() {
     }
   },[user,token ,segments,router]);
 
-  
+  if(!hydrated) return null;
 
   return (
     <SafeAreaProvider>
