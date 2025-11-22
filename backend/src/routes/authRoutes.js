@@ -25,7 +25,7 @@ router.post("/register",async(req,res)=>{
         if(existingUser){
             return res.status(400).json({message:"User already exists"});
         }
-
+        
         const profileImage = `https://api.dicebear.com/7.x/big-smile/svg?seed=${username}`;
 
         const user = new User({
