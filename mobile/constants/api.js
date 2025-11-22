@@ -1,1 +1,1 @@
-export const API_KEY = "http://192.168.1.39:3000/api";
+export const API_KEY = "https://book-review-sg3v.onrender.com/api";

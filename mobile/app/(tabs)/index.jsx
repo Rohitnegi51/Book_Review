@@ -63,8 +63,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchBooks();
-  }, []);
+    if(token){
+      fetchBooks();
+    }
+  }, [token]);
 
   const handleLoadMore = async () => {
     if (hasMore && !loading && !refreshing) {
@@ -83,7 +85,7 @@ export default function Home() {
       </View>
 
       <View style={styles.bookImageContainer}>
-        <Image source={item.image} style={styles.bookImage} contentFit="cover" />
+        <Image source={{uri: item.image}} style={styles.bookImage} contentFit="cover" />
       </View>
 
       <View style={styles.bookDetails}>
